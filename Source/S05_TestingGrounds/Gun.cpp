@@ -14,6 +14,7 @@ AGun::AGun()
 
 	FP_Gun = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FP_Gun"));
 	FP_MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleLocation"));
+	FP_MuzzleLocation->SetupAttachment(FP_Gun);
 
 }
 
@@ -39,14 +40,15 @@ void AGun::OnFire()
 		UWorld* const World = GetWorld();
 		if (World != nullptr)
 		{
-
 				const FRotator SpawnRotation = FP_MuzzleLocation->GetComponentRotation();
 				// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
 				const FVector SpawnLocation = FP_MuzzleLocation->GetComponentLocation();
 
 				//Set Spawn Collision Handling Override
 				FActorSpawnParameters ActorSpawnParams;
-				ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+				ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+				//UE_LOG(LogTemp, Warning, TEXT("Fire at: %s,     rotation: %s"),*SpawnLocation.ToString(), *SpawnRotation.ToString());
 
 				// spawn the projectile at the muzzle
 				World->SpawnActor<AS05_TestingGroundsProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
